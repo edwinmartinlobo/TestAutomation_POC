@@ -1,0 +1,44 @@
+{
+  "name": "ai-test-automation-framework",
+  "version": "1.0.0",
+  "description": "AI-powered test automation framework with self-healing and intelligent failure triaging",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "test-suites"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm install --workspace=backend && npm install --workspace=frontend && npm install --workspace=test-suites",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.yml down",
+    "docker:logs": "docker-compose -f docker/docker-compose.yml logs -f",
+    "db:migrate": "npm run migrate --workspace=backend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=test-suites",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "keywords": [
+    "test-automation",
+    "ai",
+    "self-healing",
+    "mobile-testing",
+    "api-testing",
+    "appium",
+    "claude",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0"
+  }
+}

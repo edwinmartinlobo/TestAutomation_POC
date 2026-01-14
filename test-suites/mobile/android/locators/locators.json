@@ -1,0 +1,140 @@
+{
+  "loginPage": {
+    "username": {
+      "primary": {
+        "type": "id",
+        "value": "com.example.app:id/username_input"
+      },
+      "fallbacks": [
+        {
+          "type": "xpath",
+          "value": "//android.widget.EditText[@content-desc='Username']"
+        },
+        {
+          "type": "xpath",
+          "value": "//android.widget.EditText[contains(@text, 'Username')]"
+        },
+        {
+          "type": "androidUIAutomator",
+          "value": "new UiSelector().className(\"android.widget.EditText\").instance(0)"
+        }
+      ],
+      "metadata": {
+        "lastVerified": "2026-01-13",
+        "healingHistory": [],
+        "elementDescription": "Username input field on login screen"
+      }
+    },
+    "password": {
+      "primary": {
+        "type": "id",
+        "value": "com.example.app:id/password_input"
+      },
+      "fallbacks": [
+        {
+          "type": "xpath",
+          "value": "//android.widget.EditText[@content-desc='Password']"
+        },
+        {
+          "type": "xpath",
+          "value": "//android.widget.EditText[@password='true']"
+        },
+        {
+          "type": "androidUIAutomator",
+          "value": "new UiSelector().className(\"android.widget.EditText\").instance(1)"
+        }
+      ],
+      "metadata": {
+        "lastVerified": "2026-01-13",
+        "healingHistory": [],
+        "elementDescription": "Password input field on login screen"
+      }
+    },
+    "loginButton": {
+      "primary": {
+        "type": "id",
+        "value": "com.example.app:id/login_button"
+      },
+      "fallbacks": [
+        {
+          "type": "xpath",
+          "value": "//android.widget.Button[@text='Login']"
+        },
+        {
+          "type": "xpath",
+          "value": "//android.widget.Button[@content-desc='Login']"
+        },
+        {
+          "type": "androidUIAutomator",
+          "value": "new UiSelector().className(\"android.widget.Button\").text(\"Login\")"
+        }
+      ],
+      "metadata": {
+        "lastVerified": "2026-01-13",
+        "healingHistory": [],
+        "elementDescription": "Login submit button"
+      }
+    },
+    "errorMessage": {
+      "primary": {
+        "type": "id",
+        "value": "com.example.app:id/error_text"
+      },
+      "fallbacks": [
+        {
+          "type": "xpath",
+          "value": "//android.widget.TextView[@resource-id='com.example.app:id/error_text']"
+        },
+        {
+          "type": "xpath",
+          "value": "//android.widget.TextView[contains(@text, 'Error')]"
+        }
+      ],
+      "metadata": {
+        "lastVerified": "2026-01-13",
+        "healingHistory": [],
+        "elementDescription": "Error message text view"
+      }
+    }
+  },
+  "homePage": {
+    "welcomeText": {
+      "primary": {
+        "type": "id",
+        "value": "com.example.app:id/welcome_text"
+      },
+      "fallbacks": [
+        {
+          "type": "xpath",
+          "value": "//android.widget.TextView[contains(@text, 'Welcome')]"
+        }
+      ],
+      "metadata": {
+        "lastVerified": "2026-01-13",
+        "healingHistory": [],
+        "elementDescription": "Welcome message on home screen"
+      }
+    },
+    "logoutButton": {
+      "primary": {
+        "type": "id",
+        "value": "com.example.app:id/logout_button"
+      },
+      "fallbacks": [
+        {
+          "type": "xpath",
+          "value": "//android.widget.Button[@text='Logout']"
+        },
+        {
+          "type": "xpath",
+          "value": "//android.widget.Button[@content-desc='Logout']"
+        }
+      ],
+      "metadata": {
+        "lastVerified": "2026-01-13",
+        "healingHistory": [],
+        "elementDescription": "Logout button"
+      }
+    }
+  }
+}

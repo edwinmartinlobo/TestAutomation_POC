@@ -1,0 +1,149 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: test-automation-db
+    environment:
+      POSTGRES_DB: test_automation
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass123
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testuser -d test_automation"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  # MinIO Object Storage (for screenshots and artifacts)
+  minio:
+    image: minio/minio:latest
+    container_name: test-automation-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Console
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: test-automation-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://testuser:testpass123@postgres:5432/test_automation
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY}
+      APPIUM_HOST: appium
+      APPIUM_PORT: 4723
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_USE_SSL: "false"
+      MINIO_BUCKET: test-artifacts
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+      - test_screenshots:/app/screenshots
+      - test_logs:/app/logs
+    networks:
+      - test-network
+    restart: unless-stopped
+
+  # Frontend Dashboard
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: test-automation-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+      VITE_WS_URL: ws://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    networks:
+      - test-network
+    restart: unless-stopped
+
+  # Appium Server for Mobile Testing
+  appium:
+    image: appium/appium:latest
+    container_name: test-automation-appium
+    privileged: true
+    ports:
+      - "4723:4723"
+    environment:
+      APPIUM_HOST: 0.0.0.0
+      APPIUM_PORT: 4723
+    volumes:
+      - ../test-suites:/tests
+      - /dev/bus/usb:/dev/bus/usb  # For USB device access
+      - appium_data:/root/.appium
+    networks:
+      - test-network
+    restart: unless-stopped
+    command: appium --allow-cors --relaxed-security
+
+  # Redis (Optional - for job queues and caching)
+  redis:
+    image: redis:7-alpine
+    container_name: test-automation-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - test-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+  redis_data:
+    driver: local
+  appium_data:
+    driver: local
+  test_screenshots:
+    driver: local
+  test_logs:
+    driver: local

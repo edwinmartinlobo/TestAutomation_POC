@@ -1,0 +1,14 @@
+{
+  "name": "test-automation-demo",
+  "version": "1.0.0",
+  "description": "Demos for AI Test Automation Framework",
+  "scripts": {
+    "demo:triaging": "tsx test-ai-triaging.ts",
+    "demo:healing": "tsx test-self-healing.ts",
+    "demo:all": "npm run demo:triaging && echo '' && npm run demo:healing"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "tsx": "^4.21.0"
+  }
+}
